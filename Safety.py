@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from openpyxl import load_workbook
+from openpyxl import Workbook
 import matplotlib.pyplot as plt
 
 # Set the page layout to "wide"
@@ -20,7 +20,7 @@ def write_to_excel(date, issue, owner, comment, job_number):
         ws = wb.active
     else:
         # Create a new workbook if the file doesn't exist
-        wb = load_workbook("data.xlsx")
+        wb = Workbook()
         ws = wb.active
         # Write the headers if the file is new
         ws.append(["Date", "Issue", "Owner", "Comment", "Job#"])  # Column headers
@@ -41,9 +41,11 @@ def load_excel(file_path):
             st.error(f"Error reading Excel file: {e}")
             return pd.DataFrame()
     else:
-        # If the file doesn't exist, show a message and return an empty DataFrame
-        st.error("No Excel file found. Please create one first.")
-        return pd.DataFrame()
+        # If the file doesn't exist, create the file and then read it
+        st.write("No Excel file found. A new file is being created...")
+        # Create the file and add headers if it doesn't exist
+        write_to_excel(None, None, None, None, None)  # This will create the file and add headers
+        return pd.DataFrame(columns=["Date", "Issue", "Owner", "Comment", "Job#"])
 
 # File path for Excel (you can change this to the location you want)
 file_path = "data.xlsx"
