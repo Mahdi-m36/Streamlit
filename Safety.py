@@ -22,6 +22,7 @@ def write_to_excel(date, issue, owner, comment, job_number):
         # Create a new workbook if the file doesn't exist
         wb = load_workbook("data.xlsx")
         ws = wb.active
+        # Write the headers if the file is new
         ws.append(["Date", "Issue", "Owner", "Comment", "Job#"])  # Column headers
 
     # Append new data to the sheet
@@ -32,18 +33,20 @@ def write_to_excel(date, issue, owner, comment, job_number):
 
 # Load the Excel file into a DataFrame
 def load_excel(file_path):
-    try:
-        return pd.read_excel(file_path)
-    except Exception as e:
-        st.error(f"Error reading Excel file: {e}")
+    # Check if the file exists, and if it does, read it
+    if os.path.exists(file_path):
+        try:
+            return pd.read_excel(file_path)
+        except Exception as e:
+            st.error(f"Error reading Excel file: {e}")
+            return pd.DataFrame()
+    else:
+        # If the file doesn't exist, show a message and return an empty DataFrame
+        st.error("No Excel file found. Please create one first.")
         return pd.DataFrame()
 
 # File path for Excel (you can change this to the location you want)
 file_path = "data.xlsx"
-
-# Check if the Excel file exists
-if not os.path.exists(file_path):
-    st.write("No Excel file found. Please create one first.")
 
 # Load the Excel data into a DataFrame
 df = load_excel(file_path)
